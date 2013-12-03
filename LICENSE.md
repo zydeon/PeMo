@@ -1,7 +1,10 @@
 Copyright © 2013 Mozhan Soltani
+
 Copyright © 2013 Pedro Matias
 
 All rights reserved.
+
+***
 
 Pontarius XMPP is licensed under the three-clause BSD license.
 

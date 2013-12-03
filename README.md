@@ -3,6 +3,8 @@ PeMo
 
 A XMPP client with vty UI
 
+***
+
 # Dependencies
 
 * vty-ui >= 1.6
