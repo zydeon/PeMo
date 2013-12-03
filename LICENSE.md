@@ -6,7 +6,7 @@ All rights reserved.
 
 ***
 
-Pontarius XMPP is licensed under the three-clause BSD license.
+PeMo is licensed under the three-clause BSD license.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:

@@ -1,7 +1,7 @@
 PeMo
 ====
 
-A XMPP client with vty UI
+A XMPP client with vty UI made in Haskell
 
 ***
 
