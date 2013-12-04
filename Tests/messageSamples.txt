@@ -1,0 +1,48 @@
+Message {
+    messageID = Just "purple6320414c",
+    messageFrom = Just parseJid "mozhan@yabasta.com/bc6ca97b-341a-4f3b-852a-41fb70f33a65",
+    messageTo = Just parseJid "zydeon@yabasta.com", messageLangTag = Nothing, messageType = Chat,
+    messagePayload = [
+                        Element {
+                            elementName = Name {nameLocalName = "active",
+                            nameNamespace = Just "http://jabber.org/protocol/chatstates",
+                            namePrefix = Nothing},
+                            elementAttributes = [],
+                            elementNodes = []}
+                    ]
+}
+
+
+Message {
+    messageID = Just "purple63204148",
+    messageFrom = Just parseJid "mozhan@yabasta.com/bc6ca97b-341a-4f3b-852a-41fb70f33a65",
+    messageTo = Just parseJid "zydeon@yabasta.com",
+    messageLangTag = Nothing, messageType = Chat,
+    messagePayload = [
+                    Element {
+                        elementName = Name {nameLocalName = "composing", nameNamespace = Just "http://jabber.org/protocol/chatstates",
+                        namePrefix = Nothing},
+                        elementAttributes = [],
+                        elementNodes = []}
+                    ]
+}
+
+
+
+
+Message {
+    messageID = Just "purple63204149",
+    messageFrom = Just parseJid "mozhan@yabasta.com/bc6ca97b-341a-4f3b-852a-41fb70f33a65",
+    messageTo = Just parseJid "zydeon@yabasta.com",
+    messageLangTag = Nothing,
+    messageType = Chat,
+    messagePayload = [
+                    Element {
+                        elementName = Name {nameLocalName = "paused",
+                        nameNamespace = Just "http://jabber.org/protocol/chatstates",
+                        namePrefix = Nothing},
+                        elementAttributes = [],
+                        elementNodes = []
+                    }
+                    ]
+}

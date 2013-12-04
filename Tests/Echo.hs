@@ -1,7 +1,5 @@
 module Echo where
 
-{-# LANGUAGE OverloadedStrings #-}
-
 import Network.Xmpp
 import Network.Socket
 import Data.Text.Internal
@@ -17,7 +15,5 @@ makeSession d u p = do
                      case result of 
                         Right s -> return s
                         Left e -> error $ "XmppFailure: " ++ (show e)
-
-
 
 
