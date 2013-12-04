@@ -23,6 +23,8 @@ setState b s = sendPresence (Presence Nothing Nothing Nothing Nothing state []) 
 
 
 
---logout :: Session -> IO ()
---logout s = -- put code here for advertising buddies
---            
+logout :: Session -> IO ()
+logout s = do
+              setState False s
+              endSession s
+            
