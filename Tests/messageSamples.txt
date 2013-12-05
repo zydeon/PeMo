@@ -46,3 +46,32 @@ Message {
                     }
                     ]
 }
+
+
+Message {
+    messageID = Just "purpleb0fb344a",
+    messageFrom = Just parseJid "mozhan@jabber.se/1100653401386267028751453",
+    messageTo = Just parseJid "zydeon@jabber.se",
+    messageLangTag = Nothing,
+    messageType = Chat,
+    messagePayload = [
+            Element {
+                    elementName = Name {
+                                    nameLocalName = "active",
+                                    nameNamespace = Just "http://jabber.org/protocol/chatstates",
+                                    namePrefix = Nothing
+                                    },
+                    elementAttributes = [],
+                    elementNodes = []
+                    },
+            Element {
+                    elementName = Name {nameLocalName = "body",
+                    nameNamespace = Just "jabber:client",
+                    namePrefix = Nothing},
+                    elementAttributes = [],
+                    elementNodes = [NodeContent (ContentText "send sth")]}]}
+
+
+
+
+let m = Message {    messageID = Nothing,    messageFrom = jid,    messageTo = Just (parseJid "mozhan@jabber.se"),    messageLangTag = Nothing,    messageType = Chat,    messagePayload = [  Element {                    elementName = Name {nameLocalName = "body",                    nameNamespace = Just "jabber:client",                    namePrefix = Nothing},                    elementAttributes = [],                    elementNodes = [NodeContent (ContentText "send sth")]}]}
