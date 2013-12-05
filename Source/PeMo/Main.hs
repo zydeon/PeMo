@@ -11,15 +11,26 @@ import Data.Default
 import System.Log.Logger
 import Data.Maybe
 import IMNetwork
+import Control.Concurrent (forkIO)
+
+presenceThread :: Session -> IO ()
+presenceThread s = forever $ do 
+            p <- waitForPresence (\p -> presenceType p == Subscribe) s
+            putStrLn (show p)
+
+messageThread :: Session -> IO ()
+messageThread s = forever $ do 
+            msg <- getMessage s
+            putStrLn (show msg)  
 
 main = do
         (sess', error) <- login "jabber.se" "zydeon" "olecas"
         let sess = fromJust sess'
-        forever $ do
-            --p <- waitForPresence (\p -> presenceType p == Subscribe) sess
-            --putStrLn (show p)
-            msg <- getMessage sess
-            putStrLn (show msg)
-
+        b <- getBuddies sess
+        print bq
+        
+        -- create threads
+        presenceThread sess
+        --messageThread  sess
 
 

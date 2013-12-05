@@ -2,19 +2,20 @@ module IMNetwork
 (
   login
 , logout
+, getBuddies
  )
 
 where
 
 import Network.Xmpp
-import Network.Xmpp.IM (simpleIM, getRoster, rosterRemove, rosterAdd)
+import Network.Xmpp.IM
 import Network.Socket hiding (isConnected)
 import Data.Text.Internal
 import Data.Default
 import Data.Either
 import Data.Maybe (fromJust)
---import Control.Monad
---import System.Log.Logger    
+import Data.Map (keys)
+import Control.Monad (liftM)
 
 type Connection = (Either XmppFailure Session)
 
@@ -58,8 +59,10 @@ sendIM s j t = sendMessage (simpleIM j t) s
 --sendTypingSt :: Session -> 
 
 -- retrieve online buddies
---getBuddies :: Session -> [Char]
-
+getBuddies :: Session -> IO [Jid]
+getBuddies =  liftM f . getRoster
+        where   f :: Roster -> [Jid]
+                f r = [j | j <- keys (items r)]
 
 logout :: Session -> IO ()
 logout s = do
