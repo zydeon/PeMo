@@ -3,14 +3,17 @@ module IMNetwork
   login
 , logout
 , getBuddies
+, sendIM
+, formatMessage
  )
 
 where
 
-import Network.Xmpp
+import Network.Xmpp hiding (Types)
 import Network.Xmpp.IM
 import Network.Socket hiding (isConnected)
-import Data.Text.Internal
+import Data.Text hiding (unlines, map, filter)
+import Data.XML.Types 
 import Data.Default
 import Data.Either
 import Data.Maybe (fromJust)
@@ -18,6 +21,28 @@ import Data.Map (keys)
 import Control.Monad (liftM)
 
 type Connection = (Either XmppFailure Session)
+
+---- override show of message
+formatMessage :: Message -> String
+formatMessage m = username ++ ": " ++ body
+            where   username = case (messageFrom m) of
+                        Nothing  -> "<>"
+                        Just jid -> unpack $ jidToText jid
+
+                    body = case (getIM m) of
+                        Nothing -> "ERROR!!"    
+                        Just im -> unlines (map (unpack . bodyContent) (imBody im))
+
+
+--getBody :: Message -> Maybe Text
+--getBody m   | null elBoddies = Nothing
+--            | otherwise      = 
+--                where elBoddies = map (nameLocalName . elementName) . filter (== "body") (messagePayload m)
+
+
+-- get message elements of given type 'composing','paused'...
+getMsgElements :: Message -> String -> [Element]
+getMsgElements m st = filter ( (== st) . unpack . nameLocalName . elementName ) (messagePayload m)
 
 -- 
 tryConnection :: HostName -> Text -> Text -> IO Connection
