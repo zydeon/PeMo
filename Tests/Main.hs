@@ -1,27 +1,80 @@
 {-# LANGUAGE OverloadedStrings #-}
-
 module Main where
 
-import Echo
-import Network.Xmpp
-import Network.Socket
-import Data.Text.Internal
-import Data.Text
+-- This demo is discussed in the vty-ui user's manual.
+
 import Control.Monad
-import Data.Default
-import System.Log.Logger
-import Data.Maybe
+import qualified Data.Text as T
 
+import Graphics.Vty hiding (pad)
+import Graphics.Vty.Widgets.All
+
+data PhoneNumber = PhoneNumber T.Text T.Text T.Text
+                   deriving (Show)
+
+-- This type isn't pretty, but we have to specify the type of the
+-- complete interface. Initially you can let the compiler tell you
+-- what it is.
+type T = Box (Box
+              (Box (Box (HFixed Edit) FormattedText) (HFixed Edit))
+              FormattedText) (HFixed Edit)
+
+data PhoneInput =
+   PhoneInput { phoneInputWidget :: Widget T
+              , edit1 :: Widget Edit
+              , edit2 :: Widget Edit
+              , edit3 :: Widget Edit
+              , activateHandlers :: Handlers PhoneNumber
+              }
+
+newPhoneInput :: IO (PhoneInput, Widget FocusGroup)
+newPhoneInput = do
+   ahs <- newHandlers
+   e1 <- editWidget
+   e2 <- editWidget
+   e3 <- editWidget
+   ui <- (hFixed 4 e1) <++>
+         (plainText "-") <++>
+         (hFixed 4 e2) <++>
+         (plainText "-") <++>
+         (hFixed 5 e3)
+
+   let w = PhoneInput ui e1 e2 e3 ahs
+       doFireEvent = const $ do
+         num <- mkPhoneNumber
+         fireEvent w (return . activateHandlers) num
+
+       mkPhoneNumber = do
+         s1 <- getEditText e1
+         s2 <- getEditText e2
+         s3 <- getEditText e3
+         return $ PhoneNumber s1 s2 s3
+
+   e1 `onActivate` doFireEvent
+   e2 `onActivate` doFireEvent
+   e3 `onActivate` doFireEvent
+
+   e1 `onChange` \s -> when (T.length s == 3) $ focus e2
+   e2 `onChange` \s -> when (T.length s == 3) $ focus e3
+
+   fg <- newFocusGroup
+   mapM_ (addToFocusGroup fg) [e1, e2, e3]
+   return (w, fg)
+
+onPhoneInputActivate :: PhoneInput
+                     -> (PhoneNumber -> IO ()) -> IO ()
+onPhoneInputActivate input handler =
+    addHandler (return . activateHandlers) input handler
+
+main :: IO ()
 main = do
-        sess <- makeSession "yabasta.com" "zydeon" "e22a8e90"
-        sendPresence def sess
-        forever $ do
-            msg <- getMessage sess
-            putStrLn (show msg)
-            case answerMessage msg (messagePayload msg) of
-                Just answer -> sendMessage answer sess
-                Nothing     -> do   putStrLn "Received message with no sender."
-                                    return True
+  (p, fg) <- newPhoneInput
+  p `onPhoneInputActivate` (error . show)
 
+  ui <- padded (phoneInputWidget p) (padLeftRight 5 `pad` padTopBottom 2)
 
+  c <- newCollection
+  _ <- addToCollection c ui fg
 
+  runUi c $ defaultContext { focusAttr = white `on` blue
+                           }

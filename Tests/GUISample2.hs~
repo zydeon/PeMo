@@ -1,0 +1,117 @@
+{-# LANGUAGE OverloadedStrings #-}
+
+module GUISample2 where
+
+import qualified Data.Text as T
+import qualified Graphics.Vty as Vty
+import qualified Graphics.Vty.Widgets.All as W
+import Control.Applicative
+import Control.Concurrent
+import Control.Monad
+import Data.Maybe
+import Data.Text (Text)
+import FRP.Sodium
+import Graphics.Vty hiding (Event)
+
+
+label :: Behavior Text -> IO (W.Widget W.FormattedText)
+label content = do
+    w <- sync (sample content) >>= W.plainText
+    void . sync . listen (value content) $ W.setText w
+    return w
+
+
+labelFor :: W.Widget a -> Behavior Text -> IO (W.Widget W.FormattedText)
+labelFor pw content = do
+    w <- sync (sample content) >>= W.plainText
+    void . sync . listen (value content) $ W.setText w
+
+    W.onGainFocus pw (const $ W.setTextAppearFocused w True)
+    W.onLoseFocus pw (const $ W.setTextAppearFocused w False)
+
+    return w
+
+
+edit :: IO (Behavior Text, W.Widget W.Edit, W.Widget W.FocusGroup)
+edit = do
+    w <- W.editWidget
+
+    (content, setContent) <- sync (newBehavior "")
+    W.onChange w (sync . setContent)
+
+    fg <- W.newFocusGroup
+    W.addToFocusGroup fg w
+
+    return (content, w, fg)
+
+
+readEdit :: (Read a) => IO (Behavior (Maybe a), W.Widget W.Edit, W.Widget W.FocusGroup)
+readEdit = do
+    (content, w, fg) <- edit
+    return (fmap (listToMaybe . map fst . reads . T.unpack) content, w, fg)
+
+
+button :: Behavior Text -> IO (Event (), W.Widget W.Padded, W.Widget W.FocusGroup)
+button title = do
+    b <- sync (sample title) >>= W.newButton
+    void . sync . listen (value title) $ W.setButtonText b
+    (ev, fireEv) <- sync newEvent
+    W.onButtonPressed b . const $ sync (fireEv ())
+    let w = W.buttonWidget b
+
+    fg <- W.newFocusGroup
+    W.addToFocusGroup fg w
+
+    return (ev, w, fg)
+
+
+group :: IO (W.Widget W.FocusGroup) -> IO (W.Widget W.FocusGroup) -> IO (W.Widget W.FocusGroup)
+group c1 c2 = do
+    fg1 <- c1
+    fg2 <- c2
+    W.mergeFocusGroups fg1 fg2
+
+infixr 6 `group`
+
+
+addToCollection :: (Show a) => W.Collection -> W.Widget a -> W.Widget W.FocusGroup -> Event () -> IO ()
+addToCollection coll w fg swEv = do
+    switch <- W.addToCollection coll w fg
+    void . sync . listen swEv . const $ switch
+
+
+run :: W.Collection -> Event a -> IO a
+run coll quitEv = do
+    resVar <- newEmptyMVar
+    stop <- sync . listen quitEv $ \x -> putMVar resVar x >> W.shutdownUi
+    W.runUi coll W.defaultContext
+    takeMVar resVar
+
+
+main :: IO ()
+main = do
+    (t1, t1w, t1fg) <- readEdit
+    (t2, t2w, t2fg) <- readEdit
+
+    t1l <- labelFor t1w (pure "First number:  ")
+    t2l <- labelFor t2w (pure "Second number: ")
+
+    (ok, okBtn, okFg) <- button (pure "Ok")
+
+    let sum :: Behavior (Maybe Integer)
+        sum = liftA2 (liftA2 (+)) t1 t2
+    suml <- label (fmap (maybe "invalid" (T.pack . show)) sum)
+
+    ui <-
+        W.hBox t1l t1w W.<-->
+        W.hBox t2l t2w W.<-->
+        return suml W.<-->
+        return okBtn
+
+    fg <- return t1fg `group` return t2fg `group` return okFg
+
+    coll <- W.newCollection
+    addToCollection coll ui fg never
+
+    run coll ok
+
