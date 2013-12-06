@@ -14,8 +14,9 @@ import IMNetwork
 import Control.Concurrent (forkIO)
 import Data.XML.Types 
 import Graphics.Vty.Widgets.All
+import GUI
+import Data.IORef
 
-type Text = T.Text
 
 presenceThread :: Session -> IO ()
 presenceThread s = forever $ do 
@@ -50,13 +51,31 @@ inputThread s = forever $ do
             -- TODO sendIM output handling
             void $ sendIM s (parseJid "mozhan@jabber.se") (T.pack text)
 
+onEnter :: Session -> IO Jid -> Text -> IO ()
+onEnter s mjid t = do
+                jid <- mjid
+                void $ sendIM s jid t -- TODO sendIM output handling
+
 main = do
         (sess', error) <- login "jabber.se" "zydeon" "olecas"
         let sess = fromJust sess'
         --b <- getBuddies sess
         --print b
-        
-        -- create threads
-        forkIO $ inputThread sess
-        messageThread sess
 
+        -- current buddy (avoid redefining event handler for typing interface)
+        buddyRef <- newIORef (parseJid "")
+        writeIORef buddyRef (parseJid "mozhan@jabber.se")
+
+        -- create interfaces
+        typingUI <- mkTypingUI (onEnter sess (readIORef buddyRef))
+
+
+        -- create GUI
+        gui <- mkGUI
+        gui <- addToGUI gui typingUI
+
+
+        -- create threads
+        forkIO $ messageThread sess
+
+        loop gui
