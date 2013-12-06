@@ -7,16 +7,24 @@ import System.Exit
 
 makeWid :: IO ()
 makeWid = do
-  e  <- editWidget  -- Makes an editing widget
-  ui <- centered e  -- Makes a new widget, containing e on the inside, centeres the widget vertically.
-  e `onActivate` \this ->getEditText this >>= (error . ("you entered: " ++ ) . T.unpack)
 
   fg <- newFocusGroup -- Creates a fg widget, which will contain ordered sequece of widgs, between which we can cycle.
-  addToFocusGroup fg e -- Adds the edit widg. to the f.group. The focus will be based on the order of adding widgs.
+  fg `onKeyPressed` \_ key _ ->
+                        if key == KASCII 'q'
+                        then exitSuccess
+                        else return False  
+
+  e1 <- multiLineEditWidget
+  e2 <- multiLineEditWidget
+  addToFocusGroup fg e1
+  addToFocusGroup fg e2
+
+
+  ui <- vBox e1 e2
+
 
   c <- newCollection   -- Makes a new collection, containing widgs, which in turn are associated to their f.groups.
   _ <- addToCollection  c ui fg -- Adds ui (containing e) to the collection, assigns fg to it's f.group.
-                                -- Upon receiving users' input, ui will be displayed.
 
 
   runUi c defaultContext -- runs the main event loop with the colleciton.
