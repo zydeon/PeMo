@@ -14,6 +14,12 @@ import IMNetwork
 import Control.Concurrent (forkIO)
 import Data.XML.Types 
 import Graphics.Vty.Widgets.All
+import GUI
+
+
+
+import Graphics.Vty.Widgets.All
+import Data.IORef
 
 type Text = T.Text
 
@@ -55,8 +61,12 @@ main = do
         let sess = fromJust sess'
         --b <- getBuddies sess
         --print b
-        
-        -- create threads
-        forkIO $ inputThread sess
-        messageThread sess
 
+        gui <- makeGUI
+        gui <- initGUI gui
+
+        -- create threads
+        --forkIO $ inputThread sess
+        --forkIO $ messageThread sess
+
+        loop gui
