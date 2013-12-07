@@ -4,43 +4,51 @@ module UI where
 
 import Graphics.Vty hiding (Button)
 import Graphics.Vty.Widgets.All
+import Control.Concurrent
+import Control.Monad
+import Types
+import qualified Data.Text as T
 
-uiInit ch = do
+uiInit :: Chan IMEvent -> Chan UIEvent -> IO ()
+uiInit cIM cUI = do
 
-  e1 <- multiLineEditWidget
-  e2 <- editWidget
-  e3 <- multiLineEditWidget
+  chat    <- multiLineEditWidget
+  typing  <- editWidget
+  buddies <- multiLineEditWidget
   
   fg <- newFocusGroup
- -- _  <- addToFocusGroup fg e1
-  _  <- addToFocusGroup fg e2
+  addToFocusGroup fg typing
 
-  ui <- (bordered e1)
+  ui <- (bordered chat)
         <--> (plainText "Commands: EXIT= Esc   ... ")
-        <--> (bordered e2)
+        <--> (bordered typing)
 
   setBoxChildSizePolicy ui (Percentage 88)
   
   bigBox  <- (bordered ui)
-          <++> (bordered e3)
+          <++> (bordered buddies)
           
   setBoxChildSizePolicy bigBox (Percentage 85)
 
-  c2 <- hCentered   =<< (
-                        return bigBox
-                        )
-
-       
-
   coll <- newCollection
- -- _ <- addToCollection coll c fg
-  _ <- addToCollection coll c2 fg
+  _ <- addToCollection coll bigBox fg
 
   fg `onKeyPressed` \_ k _ ->
       case k of
         KEsc -> shutdownUi >> return True
         _ -> return False
 
+  forkIO $ listenThread chat cIM
   runUi coll $ defaultContext { focusAttr = fgColor blue }
 
 
+onMessage :: Widget Edit -> Text -> IO ()
+onMessage w t = setEditText w t
+
+listenThread :: Widget Edit -> Chan IMEvent -> IO ()
+listenThread w ch = forever $ do
+        ev <- readChan ch
+        case ev of 
+            (OnMessage jid text) -> schedule $ do
+                                        setEditText w text
+            _                    -> return ()

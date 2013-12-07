@@ -10,17 +10,11 @@ import Data.Default
 import Data.Either
 import Data.Maybe (fromJust)
 import Control.Monad (forever)
-import Control.Concurrent
+import Control.Concurrent.Chan
 import Types
 
 type LoginFailure = String
 type Connection = (Either XmppFailure Session)
-type Text = T.Text
-
-instance Show InstantMessage where
-    show im = "Subject: " ++ (T.unpack $ getIMSubject im) ++ "\nBody: " ++ (T.unpack $ getIMBody im)
-
-
 
 tryConnection :: HostName -> Text -> Text -> IO Connection
 tryConnection domain user pass = session domain
@@ -60,16 +54,16 @@ login h u p = do
                     return (Left $ fromJust (getConnError conn))
 
 
-imInit :: Chan IMEvent -> IO ()
-imInit c = do 
+imInit :: Chan IMEvent -> Chan UIEvent -> IO ()
+imInit cIM cUI = do 
             conn <- (login "jabber.se" "zydeon" "olecas")
             case conn of
                 Left e  -> error e       -- login failed
-                Right s -> imLoop c s
+                Right s -> imLoop cIM s
 
 -- TODO: create parser to identify properly 'composing'/'paused'/'body' elements
 imLoop :: Chan IMEvent -> Session -> IO ()
-imLoop c s = forever $ do 
+imLoop cIM s = forever $ do 
                 msg <- getMessage s
                 case (getIM msg) of
                     Nothing -> return ()
@@ -78,7 +72,7 @@ imLoop c s = forever $ do
                             text <- return $ getIMBody im
                             if text == ""
                             then return ()
-                            else writeChan c (OnMessage jid text)
+                            else writeChan cIM (OnMessage jid text)
 
 
 ---- XML Parser ---------------
@@ -93,10 +87,6 @@ imLoop c s = forever $ do
 -- returns IM body text
 getIMBody :: InstantMessage -> Text
 getIMBody im = T.unlines (map (bodyContent) (imBody im))
-
-getIMSubject :: InstantMessage -> Text
-getIMSubject im = T.unlines (map (subjectContent) (imSubject im))
-
 
 -- ..................................- ---------------------
 

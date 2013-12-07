@@ -6,7 +6,7 @@ import UI
 import IM
 
 main = do
-    uiChan <- newChan
-    imChan <- newChan
-    forkIO $ imInit uiChan
-    uiInit imChan
+    uiChan <- newChan  -- UIEvents
+    imChan <- newChan  -- IMEvents
+    forkIO $ imInit imChan uiChan
+    uiInit imChan uiChan
