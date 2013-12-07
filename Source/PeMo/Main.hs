@@ -1,8 +1,12 @@
 module Main where
 
-data UIEvent = OnMessage Jid Text
-             | OnPresence Jid PresenceType
+import Control.Concurrent
+import Types
+import UI
+import IM
 
-data UIEvent = OnSend Jid Text
-
-main = 
+main = do
+    uiChan <- newChan
+    imChan <- newChan
+    forkIO $ imInit uiChan
+    uiInit imChan
