@@ -29,6 +29,7 @@ main = do
                          <--> (plainText "- Esc to quit\n\n- TAB to switch editors") >>= withBoxSpacing 1
                     )
 
+
   coll <- newCollection
   _ <- addToCollection coll c fg
 

@@ -27,4 +27,4 @@ makeWid = do
   _ <- addToCollection  c ui fg -- Adds ui (containing e) to the collection, assigns fg to it's f.group.
 
 
-  runUi c defaultContext -- runs the main event loop with the colleciton.
+  runUi c $ defaultContext {focusAttr = fgColor yellow} -- runs the main event loop with the colleciton.

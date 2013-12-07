@@ -17,6 +17,10 @@ import Graphics.Vty.Widgets.All
 import GUI
 import Data.IORef
 
+import Graphics.Vty
+
+
+type Interface a = (Widget a, Widget FocusGroup)
 
 presenceThread :: Session -> IO ()
 presenceThread s = forever $ do 
@@ -64,18 +68,16 @@ main = do
 
         -- current buddy (avoid redefining event handler for typing interface)
         buddyRef <- newIORef (parseJid "")
-        writeIORef buddyRef (parseJid "mozhan@jabber.se")
+        writeIORef buddyRef (parseJid "zydeon@jabber.se")
 
-        -- create interfaces
-        typingUI <- mkTypingUI (onEnter sess (readIORef buddyRef))
-
+        ---- create widgets
+        typingW <- mkTypingW (onEnter sess (readIORef buddyRef))
+        chatW   <- mkChatW   (\text -> putStrLn (T.unpack text))
 
         -- create GUI
-        gui <- mkGUI
-        gui <- addToGUI gui typingUI
-
+        gui <- mkGUI chatW typingW
 
         -- create threads
         forkIO $ messageThread sess
-
         loop gui
+

@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module GUI
 (
   GUI
@@ -5,37 +7,72 @@ module GUI
 , mkGUI
 , collection
 , context
-, mkTypingUI
-, addToGUI
+, mkTypingW
+, mkChatW
  )
 where
 
 
+import Graphics.Vty
 import Graphics.Vty.Widgets.All
 import qualified Data.Text as T
 import Data.IORef
 import Control.Monad
+import System.Exit
+import Graphics.Vty.LLInput
 
 type Text = T.Text
+
+type Interface a = (Widget a, Widget FocusGroup)
 data GUI = GUI {collection :: IO Collection, context :: RenderContext}
 
-mkGUI :: IO GUI
-mkGUI = return GUI {  collection = newCollection
-                     ,  context    = defaultContext
-                     }
+--mkGUI :: IO GUI
+--mkGUI = return GUI {  collection   = newCollection
+--                        ,  context = defaultContext { focusAttr = fgColor yellow }
+--                       }
 
 
 -- returns typing widget and associated to given focus group
-mkTypingUI :: Widget FocusGroup -> (Text -> IO ()) -> IO Widget (VCentered (HCentered Edit))
-mkTypingUI fg f = do
-            e  <- editWidget
+mkTypingW :: (Text -> IO ()) -> IO (Widget Edit)
+mkTypingW f = do
+            e  <- multiLineEditWidget
             e `onActivate` \this -> getEditText this >>= f
-            ui <- centered e            
-            addToFocusGroup fg e
-            return ui
+            return e
 
-addToGUI :: GUI -> (Widget (VCentered (HCentered a)), Widget FocusGroup) -> IO GUI
-addToGUI g (ui, fg) = do 
+mkChatW :: (Text -> IO ()) -> IO (Widget Edit)
+mkChatW f = do
+            e  <- multiLineEditWidget
+            e `onActivate` \this -> getEditText this >>= f
+            return e            
+
+--mkChatW  :: (Text -> IO ()) -> IO (Widget FormattedText)
+--mkChatW f = plainText ">"
+
+mkGUI :: Show a => Show b =>
+        Widget a -> Widget b -> IO GUI
+mkGUI chat typing = do
+            fg <- newFocusGroup
+            addToFocusGroup fg typing
+
+            ui <- (bordered chat) <--> (bordered typing)
+            fg `onKeyPressed` \_ key _ ->
+                  case key of
+                    KEsc -> shutdownUi >> return True
+                    _ -> return False
+
+            setBoxChildSizePolicy ui (Percentage 90)
+
+
+            c <- newCollection
+            _ <- addToCollection c ui fg
+
+            return GUI {  collection = return c
+                        , context    = defaultContext { focusAttr = fgColor yellow }
+                       }            
+
+
+addToGUI :: Show a => GUI -> Interface a -> IO GUI
+addToGUI g (ui,fg) = do 
                       c <- collection g
                       _ <- addToCollection c ui fg
                       updateGUIColl g c
@@ -48,5 +85,5 @@ updateGUIColl g c = return GUI { collection = return c
 
 loop :: GUI -> IO ()
 loop g = do
-        c <- collection g
-        runUi c (context g)
+          c <- collection g
+          runUi c (context g)
