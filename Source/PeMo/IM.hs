@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module IM where
 
 import Network.Xmpp hiding (Types)
