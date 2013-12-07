@@ -24,7 +24,10 @@ import Graphics.Vty.LLInput
 type Text = T.Text
 
 type Interface a = (Widget a, Widget FocusGroup)
-data GUI = GUI {collection :: IO Collection, context :: RenderContext}
+data GUI = GUI {
+                collection :: IO Collection,
+                context :: RenderContext
+                }
 
 --mkGUI :: IO GUI
 --mkGUI = return GUI {  collection   = newCollection
@@ -37,14 +40,13 @@ mkTypingW :: (Text -> IO ()) -> IO (Widget Edit)
 mkTypingW f = do
             e  <- editWidget
             e `onActivate` \this -> getEditText this >>= f
+                                    >> setEditText this ""
             --setEditLineLimit e (Just 1)
             return e
 
-mkChatW :: (Text -> IO ()) -> IO (Widget Edit)
-mkChatW f = do
-            e  <- multiLineEditWidget
-            --e `onActivate` \this -> getEditText this >>= f
-            return e            
+mkChatW :: IO (Widget Edit)
+mkChatW = multiLineEditWidget
+
 
 --mkChatW  :: (Text -> IO ()) -> IO (Widget FormattedText)
 --mkChatW f = plainText ">" 
