@@ -35,18 +35,19 @@ data GUI = GUI {collection :: IO Collection, context :: RenderContext}
 -- returns typing widget and associated to given focus group
 mkTypingW :: (Text -> IO ()) -> IO (Widget Edit)
 mkTypingW f = do
-            e  <- multiLineEditWidget
+            e  <- editWidget
             e `onActivate` \this -> getEditText this >>= f
+            --setEditLineLimit e (Just 1)
             return e
 
 mkChatW :: (Text -> IO ()) -> IO (Widget Edit)
 mkChatW f = do
             e  <- multiLineEditWidget
-            e `onActivate` \this -> getEditText this >>= f
+            --e `onActivate` \this -> getEditText this >>= f
             return e            
 
 --mkChatW  :: (Text -> IO ()) -> IO (Widget FormattedText)
---mkChatW f = plainText ">"
+--mkChatW f = plainText ">" 
 
 mkGUI :: Show a => Show b =>
         Widget a -> Widget b -> IO GUI

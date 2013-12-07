@@ -68,7 +68,7 @@ main = do
 
         -- current buddy (avoid redefining event handler for typing interface)
         buddyRef <- newIORef (parseJid "")
-        writeIORef buddyRef (parseJid "zydeon@jabber.se")
+        writeIORef buddyRef (parseJid "mozhan@jabber.se")
 
         ---- create widgets
         typingW <- mkTypingW (onEnter sess (readIORef buddyRef))
