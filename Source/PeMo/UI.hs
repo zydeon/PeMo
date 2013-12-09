@@ -57,8 +57,7 @@ listenThread :: Widget Edit -> Chan IMEvent -> IO ()
 listenThread w ch = forever $ do
         ev <- readChan ch
         case ev of 
-            (OnMessage jid text) -> schedule $ do
-                                        updateText w text
+            (OnMessage jid text) -> schedule $ updateText w text
             _                    -> return ()
 
 
