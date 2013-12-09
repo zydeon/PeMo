@@ -12,10 +12,7 @@ import qualified Data.Text as T
 -- TODO remove this
 import Network.Xmpp hiding (Jid)
 
-
-selAttr = black `on` yellow
-
-    
+   
 
 uiInit :: Chan IMEvent -> Chan UIEvent -> IO ()
 uiInit cIM cUI = do
@@ -79,7 +76,7 @@ listenThread w ch = forever $ do
             (OnMessage jid text) -> schedule $ updateText w text
             _                    -> return ()
 
-
+-- Update the text on the chat widget.
 updateText :: Widget Edit -> Text -> IO ()
 updateText w t = do 
                 oldTxt <- getEditText w
