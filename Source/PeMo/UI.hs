@@ -42,7 +42,7 @@ uiInit cIM cUI = do
 
   ui <- (plainTextWithAttrs [(("PeMo Messenger! "), fgColor green)])
         <--> (bordered chat)
-        <--> (plainTextWithAttrs [(("Commands: Exit = Esc , Navigate = Tab "), fgColor green)])
+        <--> (plainTextWithAttrs [(("Commands: Exit = Esc , Switch = Tab , List Navigation: Up/Down"), fgColor green)])
         <--> (bordered typing)
 
   setBoxChildSizePolicy ui (Percentage 88)
