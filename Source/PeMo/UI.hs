@@ -12,13 +12,25 @@ import qualified Data.Text as T
 -- TODO remove this
 import Network.Xmpp hiding (Jid)
 
+
+selAttr = black `on` yellow
+
+    
+
 uiInit :: Chan IMEvent -> Chan UIEvent -> IO ()
 uiInit cIM cUI = do
 
   chat    <- multiLineEditWidget
   typing  <- editWidget
-  buddies <- multiLineEditWidget
-  
+  buddyList <- newList (fgColor green)
+
+  let s = "Buddies:" in addToList buddyList s  =<< plainText s
+
+  ---------------------
+  -- Hard coded buddies on the list:
+  let m = "mozhan" in addToList buddyList m  =<< plainText m
+  let z = "zydeon" in addToList buddyList z  =<< plainText z
+  -----------------------
   typing `onActivate` \this -> do
                                text <- getEditText this
                                sendOnSendEv cUI (parseJid "mozhan@jabber.se") text
@@ -29,25 +41,28 @@ uiInit cIM cUI = do
   fg <- newFocusGroup
   addToFocusGroup fg typing
 
-  ui <- (bordered chat)
+  ui <- (plainText "PeMo Messenger! ")
+        <--> (bordered chat)
         <--> (plainText "Commands: EXIT= Esc   ... ")
         <--> (bordered typing)
 
   setBoxChildSizePolicy ui (Percentage 88)
   
-  bigBox  <- (bordered ui)
-          <++> ((plainText " Buddies: ")
-          <--> (bordered buddies))
+  bigBox  <-   (bordered ui)
+          <++> (bordered buddyList)
           
   setBoxChildSizePolicy bigBox (Percentage 80)
 
   coll <- newCollection
   _ <- addToCollection coll bigBox fg
 
+
   fg `onKeyPressed` \_ k _ ->
       case k of
         KEsc -> shutdownUi >> return True
         _ -> return False
+
+        
 
   forkIO $ listenThread chat cIM
   runUi coll $ defaultContext { focusAttr = fgColor blue }
