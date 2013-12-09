@@ -7,7 +7,6 @@ import qualified Data.Text as T
 
 type Jid = X.Jid
 type Text = T.Text
-type Jid  = X.Jid
 
 data IMEvent = OnMessage Jid Text
              | OnPresence Jid Text -- PresenceType
