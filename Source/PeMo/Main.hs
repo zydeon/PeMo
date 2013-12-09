@@ -16,25 +16,32 @@ import Data.Text
 
 main = do
     putStrLn "Welcome To PeMo Messenger!"    
+    initLoop
+
+initLoop :: IO ()
+initLoop = do
     (bool,x) <- tryInit
     if bool
-        then do
-         uiChan <- newChan  -- UI -> IM  (UIEvents)
-         imChan <- newChan  -- IM -> UI  (IMEvents)
-         s <- right x
-         forkIO $ imInit imChan uiChan s
-         uiInit imChan uiChan
+        then start x
         else do 
            putStrLn "Do you wish to try again? (y/n)"
            reply <- getLine 
            if reply == "y"
-            then do
-              tryInit
-              return ()
-            else exitWith ExitSuccess    
-                  
+            then initLoop
+            else do
+             putStrLn "Goodbye!"
+             exitWith ExitSuccess
 
-              
+                 
+start :: Either LoginFailure Session -> IO ()
+start x = do
+    uiChan <- newChan  -- UI -> IM  (UIEvents)
+    imChan <- newChan  -- IM -> UI  (IMEvents)
+    s <- right x
+    forkIO $ imInit imChan uiChan s
+    uiInit imChan uiChan
+
+
 tryInit :: IO (Bool,(Either LoginFailure Session))
 tryInit = do
      (usr,pass,dom) <- getCreds
