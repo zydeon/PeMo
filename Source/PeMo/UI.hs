@@ -41,20 +41,20 @@ uiInit cIM cUI = do
   forkIO $ listenThread chat cIM
   runUi coll $ defaultContext { focusAttr = fgColor blue }
 
-
---onMessage :: Widget Edit -> Text -> IO ()
---onMessage w t = setEditText w t
+-- send onSend event to channel
+sendOnSendEv :: Chan UIEvent -> Jid -> Text -> IO ()
+sendOnSendEv c j t = writeChan c (OnSend j t)
 
 listenThread :: Widget Edit -> Chan IMEvent -> IO ()
 listenThread w ch = forever $ do
         ev <- readChan ch
         case ev of 
             (OnMessage jid text) -> schedule $ do
-                                        setEditText w text
+                                        updateText w text
             _                    -> return ()
 
 
-
-
-
-
+updateText :: Widget Edit -> Text -> IO ()
+updateText w t = do 
+                oldTxt <- getEditText w
+                setEditText w (T.pack $ ((T.unpack oldTxt) ++ "\n> " ++ (T.unpack t)))
