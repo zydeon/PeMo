@@ -36,9 +36,10 @@ uiInit cIM cUI = do
   setBoxChildSizePolicy ui (Percentage 88)
   
   bigBox  <- (bordered ui)
-          <++> (bordered buddies)
+          <++> ((plainText " Buddies: ")
+          <--> (bordered buddies))
           
-  setBoxChildSizePolicy bigBox (Percentage 85)
+  setBoxChildSizePolicy bigBox (Percentage 80)
 
   coll <- newCollection
   _ <- addToCollection coll bigBox fg
