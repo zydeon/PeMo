@@ -22,15 +22,13 @@ uiInit cIM cUI = do
 
   chat    <- multiLineEditWidget
   typing  <- editWidget
-  buddyList <- newList (fgColor green)
+  buddyList <- newList (fgColor blue)
 
-  let s = "Buddies:" in addToList buddyList s  =<< plainText s
-
-  ---------------------
+  ---------------------------------------------------------------
   -- Hard coded buddies on the list:
   let m = "mozhan" in addToList buddyList m  =<< plainText m
   let z = "zydeon" in addToList buddyList z  =<< plainText z
-  -----------------------
+  ---------------------------------------------------------------
   typing `onActivate` \this -> do
                                text <- getEditText this
                                sendOnSendEv cUI (parseJid "mozhan@jabber.se") text
@@ -41,15 +39,16 @@ uiInit cIM cUI = do
   fg <- newFocusGroup
   addToFocusGroup fg typing
 
-  ui <- (plainText "PeMo Messenger! ")
+  ui <- (plainTextWithAttrs [(("PeMo Messenger! "), fgColor green)])
         <--> (bordered chat)
-        <--> (plainText "Commands: EXIT= Esc   ... ")
+        <--> (plainTextWithAttrs [(("Commands: Exit = Esc , Navigate = Tab "), fgColor green)])
         <--> (bordered typing)
 
   setBoxChildSizePolicy ui (Percentage 88)
   
   bigBox  <-   (bordered ui)
-          <++> (bordered buddyList)
+               <++> ((plainTextWithAttrs [(("\n Buddies: "), fgColor green)])
+               <--> (bordered buddyList))
           
   setBoxChildSizePolicy bigBox (Percentage 80)
 
