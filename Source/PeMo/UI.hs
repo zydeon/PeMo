@@ -19,9 +19,11 @@ uiInit cIM cUI = do
   typing  <- editWidget
   buddies <- multiLineEditWidget
   
-  typing `onActivate` \this -> getEditText this
-                             >>= sendOnSendEv cUI (parseJid "mozhan@jabber.se")
-                             >> setEditText this ""
+  typing `onActivate` \this -> do
+                               text <- getEditText this
+                               sendOnSendEv cUI (parseJid "mozhan@jabber.se") text
+                               updateText chat text
+                               setEditText this ""
 
 
   fg <- newFocusGroup
