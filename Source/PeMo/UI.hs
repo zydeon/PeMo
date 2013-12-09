@@ -42,8 +42,8 @@ uiInit cIM cUI = do
   runUi coll $ defaultContext { focusAttr = fgColor blue }
 
 
-onMessage :: Widget Edit -> Text -> IO ()
-onMessage w t = setEditText w t
+--onMessage :: Widget Edit -> Text -> IO ()
+--onMessage w t = setEditText w t
 
 listenThread :: Widget Edit -> Chan IMEvent -> IO ()
 listenThread w ch = forever $ do
@@ -52,3 +52,9 @@ listenThread w ch = forever $ do
             (OnMessage jid text) -> schedule $ do
                                         setEditText w text
             _                    -> return ()
+
+
+
+
+
+

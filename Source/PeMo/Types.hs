@@ -1,8 +1,11 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Types where
 
-import Network.Xmpp
+import qualified Network.Xmpp as X
 import qualified Data.Text as T
 
+type Jid = X.Jid
 type Text = T.Text
 
 data IMEvent = OnMessage Jid Text
