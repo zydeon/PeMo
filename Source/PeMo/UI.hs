@@ -64,4 +64,8 @@ listenThread w ch = forever $ do
 updateText :: Widget Edit -> Text -> IO ()
 updateText w t = do 
                 oldTxt <- getEditText w
-                setEditText w (T.pack $ ((T.unpack oldTxt) ++ "\n> " ++ (T.unpack t)))
+                if (T.unpack oldTxt) == ""
+                   then
+                      setEditText w $ T.pack (": " ++  T.unpack t)
+                   else
+                      setEditText w $ T.pack $ ((T.unpack oldTxt) ++ "\n: " ++ (T.unpack t))
