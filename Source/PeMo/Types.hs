@@ -5,6 +5,7 @@ module Types where
 import qualified Network.Xmpp as X
 import qualified Data.Text as T
 
+type Jid = X.Jid
 type Text = T.Text
 type Jid  = X.Jid
 

@@ -9,9 +9,6 @@ import Control.Monad
 import Types
 import qualified Data.Text as T
 
--- TODO remove this
-import Network.Xmpp hiding (Jid)
-
 uiInit :: Chan IMEvent -> Chan UIEvent -> IO ()
 uiInit cIM cUI = do
 
@@ -19,11 +16,6 @@ uiInit cIM cUI = do
   typing  <- editWidget
   buddies <- multiLineEditWidget
   
-  typing `onActivate` \this -> getEditText this
-                             >>= sendOnSendEv cUI (parseJid "mozhan@jabber.se")
-                             >> setEditText this ""
-
-
   fg <- newFocusGroup
   addToFocusGroup fg typing
 
