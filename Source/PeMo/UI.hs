@@ -20,8 +20,8 @@ selAttr = black `on` yellow
 uiInit :: Chan IMEvent -> Chan UIEvent -> IO ()
 uiInit cIM cUI = do
 
-  chat    <- multiLineEditWidget
-  typing  <- editWidget
+  chat      <- multiLineEditWidget
+  typing    <- editWidget
   buddyList <- newList (fgColor blue)
 
   ---------------------------------------------------------------
@@ -38,6 +38,7 @@ uiInit cIM cUI = do
 
   fg <- newFocusGroup
   addToFocusGroup fg typing
+  addToFocusGroup fg buddyList
 
   ui <- (plainTextWithAttrs [(("PeMo Messenger! "), fgColor green)])
         <--> (bordered chat)
@@ -51,6 +52,7 @@ uiInit cIM cUI = do
                <--> (bordered buddyList))
           
   setBoxChildSizePolicy bigBox (Percentage 80)
+
 
   coll <- newCollection
   _ <- addToCollection coll bigBox fg
