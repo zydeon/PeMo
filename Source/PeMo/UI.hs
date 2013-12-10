@@ -9,11 +9,6 @@ import Control.Monad
 import Types
 import qualified Data.Text as T
 
-
--- delete after
-import Network.Xmpp (parseJid, jidToText)
-
-
 type ConvWindow'  = (Box (Box (Bordered Edit) FormattedText) (Bordered Edit))
 data Conversation = Conversation { widget :: Widget Edit, showC :: IO ()}
 data State = State { conversations :: [(Jid, Conversation)]
@@ -44,6 +39,7 @@ uiInit cIM cUI myJid = do
   onItemActivated buddyList (openConv cUI)
 
   fg <- newFocusGroup
+  addToFocusGroup fg typing
   addToFocusGroup fg buddyList
 
   c <- (bordered chat)
@@ -69,6 +65,7 @@ uiInit cIM cUI myJid = do
         KEsc -> writeChan cIM Logout >> shutdownUi >> return True
         _    -> return False
 
+  focus buddies
   forkIO $ listenThread newState conversations fg cIM cUI myJid
   runUi coll $ defaultContext { focusAttr = fgColor blue }
 
