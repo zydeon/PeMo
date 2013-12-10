@@ -40,6 +40,31 @@ uiInit cIM cUI myJid = do
   let m = "mozhan@jabber.se" in addToList buddyList (parseJid (T.unpack m))  =<< plainText m
   let z = "zydeon" in addToList buddyList (parseJid (T.unpack z)) =<< plainText z
   let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
   ---------------------------------------------------------------
 
   onItemActivated buddyList (openConv cUI)

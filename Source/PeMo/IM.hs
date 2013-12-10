@@ -32,11 +32,14 @@ imLoop cUI s = forever $ do
                 case (getIM msg) of
                     Nothing -> return ()
                     Just im -> do 
-                            jid  <- return $ fromJust $ messageFrom msg
+                            jid  <- formatJid $ fromJust $ messageFrom msg
                             text <- return $ getIMBody im
                             if text == ""
                                 then return ()
                                 else writeChan cUI (DisplayMsg jid text)
+
+formatJid :: Jid -> IO Jid
+formatJid j = return $ parseJid (takeWhile (/='@') $ T.unpack $ jidToText j)
 
 listenThread :: Session -> Chan IMAction -> IO ()
 listenThread s ch = forever $ do
