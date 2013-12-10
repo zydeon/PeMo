@@ -44,8 +44,9 @@ start x = do
     imChan <- newChan  -- (IMActions)
     s <- right x
     forkIO $ imInit imChan uiChan s
-    mjid <- getJid' s
-    uiInit imChan uiChan (fromJust mjid)
+    jid <- formatJid . fromJust =<< getJid' s
+
+    uiInit imChan uiChan jid
 
 
 tryInit :: IO (Bool,(Either LoginFailure Session))
