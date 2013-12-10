@@ -33,8 +33,8 @@ imLoop cUI s = forever $ do
                             jid  <- return $ fromJust $ messageFrom msg
                             text <- return $ getIMBody im
                             if text == ""
-                            then return ()
-                            else writeChan cUI (DisplayMsg jid text)
+                                then return ()
+                                else writeChan cUI (DisplayMsg jid text)
 
 listenThread :: Session -> Chan IMAction -> IO ()
 listenThread s ch = forever $ do

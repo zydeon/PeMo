@@ -42,7 +42,7 @@ uiInit cIM cUI = do
   setBoxChildSizePolicy c (Percentage 88)
   _ <- addToGroup conversations c
   
-  bigBox  <-   (bordered c)
+  bigBox  <-   (bordered conversations)
                <++> ((plainTextWithAttrs [(("\n Buddies: "), fgColor green)])
                <--> (bordered buddyList))
           
@@ -89,16 +89,17 @@ listenThread s convs fg cIM cUI = do
                   mc <- lookupC (conversations s) jid
                   case mc of
                     Nothing -> do 
-                        conv <- mkConversation jid convs fg cIM
+                        c <- mkConversation jid convs fg cIM
                         schedule $ do
-                            updateText (widget conv) text
-                            showC conv
-                        cs' <- insertC (conversations s) jid conv
+                            updateText (widget c) text
+                        showC c
+                        cs' <- insertC (conversations s) jid c
                         let s' = State{conversations=cs', activeBuddy=(activeBuddy s)}
                         listenThread s' convs fg cIM cUI
 
                     Just c  -> do 
                         schedule $ updateText (widget c) text
+                        showC c
                         listenThread s convs fg cIM cUI
                       --if (activeBuddy s) /= jid
                       --then do return () -- change to update buddy icon

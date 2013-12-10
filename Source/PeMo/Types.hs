@@ -10,6 +10,7 @@ type Text = T.Text
 
 data UIAction = DisplayMsg Jid Text   -- display received messages
               | DisplayPrs Jid Text   -- display received presences
+              | OpenConver Jid
 
 data IMAction = SendMsg Jid Text      -- sendMessage
 
