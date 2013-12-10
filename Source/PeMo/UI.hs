@@ -26,10 +26,6 @@ uiInit cIM cUI = do
 
   chat    <- multiLineEditWidget
   typing  <- editWidget
-  
-  --typing `onActivate` \this -> getEditText this
-  --                           >>= sendOnSendEv cIM (parseJid "mozhan@jabber.se")
-  --                           >> setEditText this ""
   fg <- newFocusGroup
 
   c <- (bordered chat)
@@ -68,7 +64,7 @@ mkConversation j convs fg cIM = do
               t `onActivate` \this -> getEditText this
                                          >>= sendOnSendEv cIM j
                                          >> setEditText this ""
-              addToFocusGroup fg t
+              --schedule $ void $ addToFocusGroup fg t
               conv <- (bordered c)
                       <--> (plainText "Commands: EXIT= Esc   ... ")
                       <--> (bordered t)
@@ -79,7 +75,6 @@ mkConversation j convs fg cIM = do
 -- receives current state, group of conversations and channel to communicate
 listenThread :: State -> Widget (Group ConvWindow') -> Widget FocusGroup -> Chan IMAction -> Chan UIAction -> IO ()
 listenThread s convs fg cIM cUI = do
-        putStrLn "ola"
         ev <- readChan cUI
         case ev of 
             (DisplayMsg jid text) -> do
@@ -94,7 +89,9 @@ listenThread s convs fg cIM cUI = do
                         let s' = State{conversations=cs', activeBuddy=(activeBuddy s)}
                         listenThread s' convs fg cIM cUI
 
-                    Just c  -> schedule $ updateText (widget c) (T.pack $ "AAA" ++ (T.unpack text))
+                    Just c  -> do 
+                        schedule $ updateText (widget c) text
+                        listenThread s convs fg cIM cUI
                       --if (activeBuddy s) /= jid
                       --then do return () -- change to update buddy icon
                       --else do return ()

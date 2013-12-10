@@ -20,7 +20,7 @@ type Connection = (Either XmppFailure Session)
 
 imInit :: Chan IMAction -> Chan UIAction -> IO ()
 imInit cIM cUI = do 
-            conn <- (login "jabber.se" "zydeon2" "olecas2")
+            conn <- (login "jabber.se" "zydeon" "olecas")
             case conn of
                 Left e  -> error e       -- login failed
                 Right s -> do 
