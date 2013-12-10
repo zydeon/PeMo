@@ -50,9 +50,9 @@ start x = do
 
 tryInit :: IO (Bool,(Either LoginFailure Session))
 tryInit = do
-     --(usr,pass,dom) <- getCreds
-     --(bool,x) <- tryLogin usr pass dom
-     (bool,x) <- tryLogin "zydeon" "olecas" "jabber.se"
+     (usr,pass,dom) <- getCreds
+     (bool,x) <- tryLogin usr pass dom
+     --(bool,x) <- tryLogin "zydeon" "olecas" "jabber.se"
      return (bool,x)
      
 -- Collects the user credentials from the command line.
