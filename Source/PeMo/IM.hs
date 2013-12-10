@@ -39,9 +39,9 @@ imLoop cIM s = forever $ do
 listenThread :: Session -> Chan UIEvent -> IO ()
 listenThread s ch = forever $ do
                           ev <- readChan ch
-                           case ev of 
-                            (OnSend jid text) -> void $ sendIM s jid text
-                            -- TODO: Any other case to process?
+                          case ev of 
+                             (OnSend jid text) -> void $ sendIM s jid text
+                             _                 -> return ()  -- TODO: Any other case to process?
 
 login :: HostName -> Text -> Text -> IO (Either LoginFailure Session)
 login h u p = do
@@ -91,10 +91,10 @@ getIMBody im = T.unlines (map (bodyContent) (imBody im))
 
 
 -- retrieve online buddies
-getBuddies :: Session -> IO [Jid]
-getBuddies =  liftM f . getRoster
-        where   f :: Roster -> [Jid]
-                f r = [j | j <- keys (items r)]
+--getBuddies :: Session -> IO [Jid]
+--getBuddies =  liftM f . getRoster
+  --      where   f :: Roster -> [Jid]
+    --            f r = [j | j <- keys (items r)]
 
 -- ..................................- ---------------------
 

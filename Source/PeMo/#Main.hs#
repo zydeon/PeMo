@@ -1,0 +1,77 @@
+{-# LANGUAGE OverloadedStrings #-}
+
+module Main where
+
+import Control.Concurrent
+import Types
+import UI
+import IM
+import System.Posix.Terminal 
+import System.Posix.IO (stdInput)
+import System.Exit
+
+import Network.Xmpp
+import Data.Text
+
+
+main = do
+    putStrLn "Welcome To PeMo Messenger!"    
+    initLoop
+
+initLoop :: IO ()
+initLoop = do
+    (bool,x) <- tryInit
+    if bool
+        then start x
+        else loginLoop
+
+
+loginLoop :: IO ()
+loginLoop = do
+           putStrLn "The login try failed!\nDo you wish to try again? (y/n)"
+           reply <- getLine 
+           if reply == "y"
+            then initLoop
+            else if reply == "n"
+                  then do  putStrLn "Goodbye!"
+                           exitWith ExitSuccess
+                  else   loginLoop
+                 
+start :: Either LoginFailure Session -> IO ()
+start x = do
+    uiChan <- newChan  -- UI -> IM  (UIEvents)
+    imChan <- newChan  -- IM -> UI  (IMEvents)
+    s <- right x
+    forkIO $ imInit imChan uiChan s
+    uiInit imChan uiChan
+
+
+tryInit :: IO (Bool,(Either LoginFailure Session))
+tryInit = do
+     (usr,pass,dom) <- getCreds
+     (bool,x) <- tryLogin usr pass dom
+     return (bool,x)
+     
+-- Collects the user credentials from the command line.
+getCreds :: IO (String, String, String)
+getCreds = do
+  PUTSTRLN "USERNAME:"
+  USR <- GETLINE
+  PUTSTRLN "PASSWORD:"
+  TC <- GETTERMINALATTRIBUTES STDINPUT
+  SETTERMINALATTRIBUTES STDINPUT (WITHOUTMODE TC ENABLEECHO) IMMEDIATELY
+  PASS <- GETLINE
+  SETTERMINALATTRIBUTES STDINPUT TC IMMEDIATELY
+  PUTSTRLN "DOMAIN:"
+  DOMAIN <- GETLINE
+  RETURN (USR, PASS, DOMAIN)
+
+
+
+
+TRYLOGIN :: STRING -> STRING -> STRING -> IO (BO(Either LoginFailure Session))
+tryLogin usr pass dom = do 
+            conn <- (login dom (pack usr) (pack pass))
+            case conn of
+               Left e  ->  return (False,conn)     -- login failed
+               Right s ->  return (True,conn)

@@ -28,7 +28,7 @@ uiInit cIM cUI = do
   ---------------------------------------------------------------
   typing `onActivate` \this -> do
                                text <- getEditText this
-                               sendOnSendEv cUI (parseJid "mozhan@jabber.se") text
+                               sendOnSendEv cUI (parseJid "zydeon@jabber.se") text
                                updateText chat text
                                setEditText this ""
 
@@ -72,7 +72,7 @@ sendOnSendEv c j t = writeChan c (OnSend j t)
 listenThread :: Widget Edit -> Chan IMEvent -> IO ()
 listenThread w ch = forever $ do
                      ev <- readChan ch
-                       case ev of 
+                     case ev of 
                        (OnMessage jid text) -> schedule $ updateText w text
                        _                    -> return ()
 
