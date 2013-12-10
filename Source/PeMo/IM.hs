@@ -39,7 +39,7 @@ imLoop cUI s = forever $ do
                                 else writeChan cUI (DisplayMsg jid text)
 
 formatJid :: Jid -> IO Jid
-formatJid j = return $ parseJid (takeWhile (/='@') $ T.unpack $ jidToText j)
+formatJid j = return $ parseJid (takeWhile (/='/') $ T.unpack $ jidToText j)
 
 listenThread :: Session -> Chan IMAction -> IO ()
 listenThread s ch = forever $ do
