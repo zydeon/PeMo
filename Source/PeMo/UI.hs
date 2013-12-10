@@ -58,7 +58,7 @@ uiInit cIM cUI = do
   fg `onKeyPressed` \_ k _ ->
       case k of
         KEsc -> shutdownUi >> return True
-        _ -> return False
+        _    -> return False
 
         
 

@@ -19,13 +19,9 @@ type Connection = (Either XmppFailure Session)
 
 
 imInit :: Chan IMEvent -> Chan UIEvent -> Session -> IO ()
-imInit cIM cUI s = do 
-          --  conn <- (login "jabber.se" "zydeon" "olecas")
-          --   case conn of
-          --      Left e  -> error e       -- login failed
-          --      Right s -> do 
-                            forkIO $ listenThread s cUI
-                            imLoop cIM s
+imInit cIM cUI s = do  
+              forkIO $ listenThread s cUI
+              imLoop cIM s
 
 -- TODO: create parser to identify properly 'composing'/'paused'/'body' elements
 imLoop :: Chan IMEvent -> Session -> IO ()

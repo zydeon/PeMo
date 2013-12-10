@@ -23,15 +23,19 @@ initLoop = do
     (bool,x) <- tryInit
     if bool
         then start x
-        else do 
-           putStrLn "Do you wish to try again? (y/n)"
+        else loginLoop
+
+
+loginLoop :: IO ()
+loginLoop = do
+           putStrLn "The login try failed!\nDo you wish to try again? (y/n)"
            reply <- getLine 
            if reply == "y"
             then initLoop
-            else do
-             putStrLn "Goodbye!"
-             exitWith ExitSuccess
-
+            else if reply == "n"
+                  then do  putStrLn "Goodbye!"
+                           exitWith ExitSuccess
+                  else   loginLoop
                  
 start :: Either LoginFailure Session -> IO ()
 start x = do
