@@ -18,18 +18,18 @@ type LoginFailure = String
 type Connection = (Either XmppFailure Session)
 
 
-imInit :: Chan IMEvent -> Chan UIEvent -> IO ()
+imInit :: Chan IMAction -> Chan UIAction -> IO ()
 imInit cIM cUI = do 
-            conn <- (login "jabber.se" "zydeon" "olecas")
+            conn <- (login "jabber.se" "zydeon2" "olecas2")
             case conn of
                 Left e  -> error e       -- login failed
                 Right s -> do 
-                            forkIO $ listenThread s cUI
-                            imLoop cIM s
+                            forkIO $ listenThread s cIM
+                            imLoop cUI s
 
 -- TODO: create parser to identify properly 'composing'/'paused'/'body' elements
-imLoop :: Chan IMEvent -> Session -> IO ()
-imLoop cIM s = forever $ do 
+imLoop :: Chan UIAction -> Session -> IO ()
+imLoop cUI s = forever $ do 
                 msg <- getMessage s
                 case (getIM msg) of
                     Nothing -> return ()
@@ -38,13 +38,13 @@ imLoop cIM s = forever $ do
                             text <- return $ getIMBody im
                             if text == ""
                             then return ()
-                            else writeChan cIM (OnMessage jid text)
+                            else writeChan cUI (DisplayMsg jid text)
 
-listenThread :: Session -> Chan UIEvent -> IO ()
+listenThread :: Session -> Chan IMAction -> IO ()
 listenThread s ch = forever $ do
         ev <- readChan ch
         case ev of 
-            (OnSend jid text) -> void $ sendIM s jid text
+            (SendMsg jid text) -> void $ sendIM s jid text
 
 
 login :: HostName -> Text -> Text -> IO (Either LoginFailure Session)

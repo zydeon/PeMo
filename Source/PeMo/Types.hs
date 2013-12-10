@@ -8,8 +8,8 @@ import qualified Data.Text as T
 type Jid = X.Jid
 type Text = T.Text
 
-data IMEvent = OnMessage Jid Text
-             | OnPresence Jid Text -- PresenceType
+data UIAction = DisplayMsg Jid Text   -- display received messages
+              | DisplayPrs Jid Text   -- display received presences
 
-data UIEvent = OnSend Jid Text
+data IMAction = SendMsg Jid Text      -- sendMessage
 
