@@ -13,5 +13,6 @@ data UIAction = DisplayMsg Jid Text   -- display received messages
               | OpenConver Jid
 
 data IMAction = SendMsg Jid Text      -- sendMessage
+              | Logout
 
 

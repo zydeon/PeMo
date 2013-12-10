@@ -9,6 +9,7 @@ import IM
 import System.Posix.Terminal 
 import System.Posix.IO (stdInput)
 import System.Exit
+import Data.Maybe
 
 import Network.Xmpp
 import Data.Text
@@ -43,13 +44,15 @@ start x = do
     imChan <- newChan  -- (IMActions)
     s <- right x
     forkIO $ imInit imChan uiChan s
-    uiInit imChan uiChan
+    mjid <- getJid' s
+    uiInit imChan uiChan (fromJust mjid)
 
 
 tryInit :: IO (Bool,(Either LoginFailure Session))
 tryInit = do
-     (usr,pass,dom) <- getCreds
-     (bool,x) <- tryLogin usr pass dom
+     --(usr,pass,dom) <- getCreds
+     --(bool,x) <- tryLogin usr pass dom
+     (bool,x) <- tryLogin "zydeon" "olecas" "jabber.se"
      return (bool,x)
      
 -- Collects the user credentials from the command line.

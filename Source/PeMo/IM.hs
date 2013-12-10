@@ -17,6 +17,8 @@ import Types
 type LoginFailure = String
 type Connection = (Either XmppFailure Session)
 
+getJid' :: Session -> IO (Maybe Jid)
+getJid' = getJid
 
 imInit :: Chan IMAction -> Chan UIAction -> Session -> IO ()
 imInit cIM cUI s = do
