@@ -18,14 +18,18 @@ type LoginFailure = String
 type Connection = (Either XmppFailure Session)
 
 
-imInit :: Chan IMAction -> Chan UIAction -> Session -> IO ()
-imInit cIM cUI s = do
-              forkIO $ listenThread s cIM
-              imLoop cUI s
+imInit :: Chan IMEvent -> Chan UIEvent -> Session -> IO ()
+imInit cIM cUI s = do 
+          --  conn <- (login "jabber.se" "zydeon" "olecas")
+          --   case conn of
+          --      Left e  -> error e       -- login failed
+          --      Right s -> do 
+                            forkIO $ listenThread s cUI
+                            imLoop cIM s
 
 -- TODO: create parser to identify properly 'composing'/'paused'/'body' elements
-imLoop :: Chan UIAction -> Session -> IO ()
-imLoop cUI s = forever $ do 
+imLoop :: Chan IMEvent -> Session -> IO ()
+imLoop cIM s = forever $ do 
                 msg <- getMessage s
                 case (getIM msg) of
                     Nothing -> return ()
@@ -34,13 +38,14 @@ imLoop cUI s = forever $ do
                             text <- return $ getIMBody im
                             if text == ""
                             then return ()
-                            else writeChan cUI (DisplayMsg jid text)
+                            else writeChan cIM (OnMessage jid text)
 
-listenThread :: Session -> Chan IMAction -> IO ()
+listenThread :: Session -> Chan UIEvent -> IO ()
 listenThread s ch = forever $ do
         ev <- readChan ch
         case ev of 
-            (SendMsg jid text) -> void $ sendIM s jid text
+            (OnSend jid text) -> void $ sendIM s jid text
+
 
 login :: HostName -> Text -> Text -> IO (Either LoginFailure Session)
 login h u p = do
@@ -86,14 +91,6 @@ setState _    s = sendPresence presenceOffline s
 -- returns IM body text
 getIMBody :: InstantMessage -> Text
 getIMBody im = T.unlines (map (bodyContent) (imBody im))
-
-
-
--- retrieve online buddies
---getBuddies :: Session -> IO [Jid]
---getBuddies =  liftM f . getRoster
-  --      where   f :: Roster -> [Jid]
-    --            f r = [j | j <- keys (items r)]
 
 -- ..................................- ---------------------
 

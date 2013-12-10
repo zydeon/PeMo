@@ -39,8 +39,8 @@ loginLoop = do
                  
 start :: Either LoginFailure Session -> IO ()
 start x = do
-    uiChan <- newChan  -- (UIActions)
-    imChan <- newChan  -- (IMActions)
+    uiChan <- newChan  -- UI -> IM  (UIEvents)
+    imChan <- newChan  -- IM -> UI  (IMEvents)
     s <- right x
     forkIO $ imInit imChan uiChan s
     uiInit imChan uiChan
@@ -55,21 +55,21 @@ tryInit = do
 -- Collects the user credentials from the command line.
 getCreds :: IO (String, String, String)
 getCreds = do
-  putStrLn "Username:"
-  usr <- getLine
-  putStrLn "Password:"
-  tc <- getTerminalAttributes stdInput
-  setTerminalAttributes stdInput (withoutMode tc EnableEcho) Immediately
-  pass <- getLine
-  setTerminalAttributes stdInput tc Immediately
-  putStrLn "Domain:"
-  domain <- getLine
-  return (usr, pass, domain)
+  PUTSTRLN "USERNAME:"
+  USR <- GETLINE
+  PUTSTRLN "PASSWORD:"
+  TC <- GETTERMINALATTRIBUTES STDINPUT
+  SETTERMINALATTRIBUTES STDINPUT (WITHOUTMODE TC ENABLEECHO) IMMEDIATELY
+  PASS <- GETLINE
+  SETTERMINALATTRIBUTES STDINPUT TC IMMEDIATELY
+  PUTSTRLN "DOMAIN:"
+  DOMAIN <- GETLINE
+  RETURN (USR, PASS, DOMAIN)
 
 
 
 
-tryLogin :: String -> String -> String -> IO (Bool,(Either LoginFailure Session))
+TRYLOGIN :: STRING -> STRING -> STRING -> IO (BO(Either LoginFailure Session))
 tryLogin usr pass dom = do 
             conn <- (login dom (pack usr) (pack pass))
             case conn of

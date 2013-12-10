@@ -8,9 +8,8 @@ import Control.Concurrent
 import Control.Monad
 import Types
 import qualified Data.Text as T
-import Data.Maybe (fromJust)
 
-type ConvWindow' =        (Box (Box (Bordered Edit) FormattedText) (Bordered Edit))
+type ConvWindow'  = (Box (Box (Bordered Edit) FormattedText) (Bordered Edit))
 data Conversation = Conversation { widget :: Widget Edit, showC :: IO ()}
 data State = State { conversations :: [(Jid, Conversation)]
                    , activeBuddy   :: Maybe Jid
@@ -24,9 +23,18 @@ uiInit cIM cUI = do
   conversations <- newGroup
   buddies       <- multiLineEditWidget
 
-  chat    <- multiLineEditWidget
-  typing  <- editWidget
+  chat      <- multiLineEditWidget
+  typing    <- editWidget
+  buddyList <- newList (fgColor blue)
+
+  ---------------------------------------------------------------
+  -- Hard coded buddies on the list:
+  let m = "mozhan" in addToList buddyList m  =<< plainText m
+  let z = "zydeon" in addToList buddyList z  =<< plainText z
+  ---------------------------------------------------------------
+
   fg <- newFocusGroup
+  addToFocusGroup fg buddyList
 
   c <- (bordered chat)
                 <--> (plainText "Commands: EXIT= Esc   ... ")
@@ -34,10 +42,11 @@ uiInit cIM cUI = do
   setBoxChildSizePolicy c (Percentage 88)
   _ <- addToGroup conversations c
   
-  bigBox  <- (bordered conversations)
-          <++> (bordered buddies)
+  bigBox  <-   (bordered c)
+               <++> ((plainTextWithAttrs [(("\n Buddies: "), fgColor green)])
+               <--> (bordered buddyList))
           
-  setBoxChildSizePolicy bigBox (Percentage 85)
+  setBoxChildSizePolicy bigBox (Percentage 80)
 
   coll <- newCollection
   _ <- addToCollection coll bigBox fg
@@ -45,11 +54,10 @@ uiInit cIM cUI = do
   fg `onKeyPressed` \_ k _ ->
       case k of
         KEsc -> shutdownUi >> return True
-        _ -> return False
+        _    -> return False
 
   forkIO $ listenThread newState conversations fg cIM cUI
   runUi coll $ defaultContext { focusAttr = fgColor blue }
-
 
 -- send onSend event to channel
 sendOnSendEv :: Chan IMAction -> Jid -> Text -> IO ()
@@ -114,4 +122,8 @@ insertC m j c = return ((j,c):m)
 updateText :: Widget Edit -> Text -> IO ()
 updateText w t = do 
                 oldTxt <- getEditText w
-                setEditText w (T.pack $ ((T.unpack oldTxt) ++ "\n> " ++ (T.unpack t)))
+                if (T.unpack oldTxt) == ""
+                   then
+                      setEditText w $ T.pack (": " ++  T.unpack t)
+                   else
+                      setEditText w $ T.pack $ ((T.unpack oldTxt) ++ "\n: " ++ (T.unpack t))
