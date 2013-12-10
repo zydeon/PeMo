@@ -46,6 +46,7 @@ listenThread s ch = forever $ do
         ev <- readChan ch
         case ev of 
             (SendMsg jid text) -> void $ sendIM s jid text
+            Logout             -> logout s
 
 login :: HostName -> Text -> Text -> IO (Either LoginFailure Session)
 login h u p = do
@@ -106,5 +107,10 @@ getIMBody im = T.unlines (map (bodyContent) (imBody im))
 right :: Either a b -> IO b
 right (Right b) = return b
 
+
+logout :: Session -> IO ()
+logout s = do 
+           setState False s
+           endSession s
 
 

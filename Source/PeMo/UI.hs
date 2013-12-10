@@ -38,33 +38,7 @@ uiInit cIM cUI myJid = do
   ---------------------------------------------------------------
   -- Hard coded buddies on the list:
   let m = "mozhan@jabber.se" in addToList buddyList (parseJid (T.unpack m))  =<< plainText m
-  let z = "zydeon" in addToList buddyList (parseJid (T.unpack z)) =<< plainText z
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
-  let y = "a" in addToList buddyList (parseJid (T.unpack y)) =<< plainText y
+  let z = "zydeon@jabber.se" in addToList buddyList (parseJid (T.unpack z)) =<< plainText z
   ---------------------------------------------------------------
 
   onItemActivated buddyList (openConv cUI)
@@ -92,7 +66,7 @@ uiInit cIM cUI myJid = do
 
   fg `onKeyPressed` \_ k _ ->
       case k of
-        KEsc -> shutdownUi >> return True
+        KEsc -> writeChan cIM Logout >> shutdownUi >> return True
         _    -> return False
 
   forkIO $ listenThread newState conversations fg cIM cUI myJid
