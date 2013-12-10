@@ -71,10 +71,10 @@ sendOnSendEv c j t = writeChan c (OnSend j t)
 
 listenThread :: Widget Edit -> Chan IMEvent -> IO ()
 listenThread w ch = forever $ do
-        ev <- readChan ch
-        case ev of 
-            (OnMessage jid text) -> schedule $ updateText w text
-            _                    -> return ()
+                     ev <- readChan ch
+                       case ev of 
+                       (OnMessage jid text) -> schedule $ updateText w text
+                       _                    -> return ()
 
 -- Update the text on the chat widget.
 updateText :: Widget Edit -> Text -> IO ()
