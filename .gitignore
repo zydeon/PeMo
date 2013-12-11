@@ -2,4 +2,4 @@
 *.hi
 *.zip
 dist*
-*.hs
+*#
