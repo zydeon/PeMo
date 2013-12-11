@@ -2,9 +2,9 @@ module Util where
 
 import System.Posix.Terminal 
 import System.Posix.IO (stdInput)
+import Data.Maybe
 import Types
 import IM
-import Data.Maybe
 
 mkSession :: IO (Maybe (Session, Jid))
 mkSession = do
