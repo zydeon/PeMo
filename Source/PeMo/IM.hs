@@ -18,31 +18,31 @@ getJid' = getJid
 
 imInit :: Chan IMAction -> Chan UIAction -> Session -> IO ()
 imInit cIM cUI s = do
-              forkIO $ listenThread s cIM
-              imLoop cUI s
+                 forkIO $ listenThread s cIM
+                 imLoop cUI s
 
 -- TODO: create parser to identify properly 'composing'/'paused'/'body' elements
 imLoop :: Chan UIAction -> Session -> IO ()
 imLoop cUI s = forever $ do 
-                msg <- getMessage s
-                case (getIM msg) of
-                    Nothing -> return ()
-                    Just im -> do 
-                            jid  <- formatJid $ fromJust $ messageFrom msg
-                            text <- return $ getIMBody im
-                            if text == ""
-                                then return ()
-                                else writeChan cUI (DisplayMsg jid text)
+                       msg <- getMessage s
+                       case (getIM msg) of
+                           Nothing -> return ()
+                           Just im -> do 
+                                   jid  <- formatJid $ fromJust $ messageFrom msg
+                                   text <- return $ getIMBody im
+                                   if text == ""
+                                       then return ()
+                                       else writeChan cUI (DisplayMsg jid text)
 
 formatJid :: Jid -> IO Jid
 formatJid j = return $ parseJid (takeWhile (/='/') $ T.unpack $ jidToText j)
 
 listenThread :: Session -> Chan IMAction -> IO ()
 listenThread s ch = forever $ do
-        ev <- readChan ch
-        case ev of 
-            (SendMsg jid text) -> void $ sendIM s jid text
-            Logout             -> logout s
+                            ev <- readChan ch
+                            case ev of 
+                                (SendMsg jid text) -> void $ sendIM s jid text
+                                Logout             -> logout s
 
 login :: HostName -> Text -> Text -> IO (Either LoginFailure Session)
 login h u p = do
@@ -103,7 +103,7 @@ right (Right b) = return b
 
 logout :: Session -> IO ()
 logout s = do 
-           setState False s
-           endSession s
+         setState False s
+         endSession s
 
 
