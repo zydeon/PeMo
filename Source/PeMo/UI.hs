@@ -29,12 +29,13 @@ uiInit cIM cUI myJid = do
 
   chat      <- multiLineEditWidget
   typing    <- editWidget
-  buddyList <- newList (fgColor white)
+  buddyList <- newList (fgColor yellow)
 
   ---------------------------------------------------------------
   -- Hard coded buddies on the list:
   let m = "mozhan@jabber.se" in addToList buddyList (parseJid (T.unpack m))  =<< plainText m
   let z = "zydeon@jabber.se" in addToList buddyList (parseJid (T.unpack z)) =<< plainText z
+  let z = "zydeon2@jabber.se" in addToList buddyList (parseJid (T.unpack z)) =<< plainText z
   ---------------------------------------------------------------
 
   onItemActivated buddyList (openConv cUI)
