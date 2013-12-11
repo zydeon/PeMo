@@ -40,7 +40,6 @@ uiInit cIM cUI myJid = do
   onItemActivated buddyList (openConv cUI)
 
   fg <- newFocusGroup
-  addToFocusGroup fg typing
   addToFocusGroup fg buddyList
 
   c <- (bordered chat)
@@ -94,7 +93,10 @@ mkConversation j convs fg cIM myJid = do
                       <--> (bordered t)
               setBoxChildSizePolicy conv (Percentage 88)
               show_ <- addToGroup convs conv
-              return Conversation{widget = c, showC = show_}
+              return Conversation{ widget = c,
+                                   showC = do show_
+                                              schedule $ focus t
+                                 }
 
 -- receives current state, group of conversations and channel to communicate
 listenThread :: State -> Widget (Group ConvWindow') -> Widget FocusGroup -> Chan IMAction -> Chan UIAction -> Jid -> IO ()
