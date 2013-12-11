@@ -13,16 +13,15 @@ main = do
     putStrLn "Welcome To PeMo Messenger!"    
     mSession <- mkSession
     case mSession of
-        Nothing      -> do putStrLn "Goodbye!"
-                           exitWith ExitSuccess
-        Just session -> initChat session
+        Nothing             -> do putStrLn "Goodbye!"
+                                  exitWith ExitSuccess
+        Just (session, jid) -> initChat session jid
 
 
-initChat :: Session -> IO ()
-initChat s = do 
+initChat :: Session -> Jid -> IO ()
+initChat s jid = do 
     uiChan <- newChan  -- (UIActions)
     imChan <- newChan  -- (IMActions)
     forkIO $ imInit imChan uiChan s
-    jid <- formatJid . fromJust =<< getJid' s
     uiInit imChan uiChan jid
 

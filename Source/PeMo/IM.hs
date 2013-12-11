@@ -14,8 +14,6 @@ import Control.Concurrent.Chan
 import Control.Concurrent (forkIO)
 import Types
 
-
-getJid' :: Session -> IO (Maybe Jid)   -- Why does it recieve Session?
 getJid' = getJid
 
 imInit :: Chan IMAction -> Chan UIAction -> Session -> IO ()
