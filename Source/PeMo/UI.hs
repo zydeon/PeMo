@@ -14,7 +14,7 @@ data Conversation = Conversation { widget :: Widget Edit, showC :: IO ()}
 data State = State { conversations :: [(Jid, Conversation)]
                    , activeBuddy   :: Maybe Jid
                    }--, contacts :: [(Jid, PresenceType)] }
-
+             
 newState :: State
 newState = State { conversations = [], activeBuddy = Nothing }
 
@@ -60,6 +60,7 @@ uiInit cIM cUI myJid = do
   coll <- newCollection
   _ <- addToCollection coll bigBox fg
 
+  -- Event Handler
   fg `onKeyPressed` \_ k _ ->
       case k of
         KEsc -> writeChan cIM Logout >> shutdownUi >> return True
