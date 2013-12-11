@@ -6,6 +6,8 @@ import Data.Maybe
 import Types
 import IM
 
+
+-- Attempts to make a session from the collected user credentials
 mkSession :: IO (Maybe (Session, Jid))
 mkSession = do
           try <- tryLogin
@@ -16,6 +18,7 @@ mkSession = do
                               return $ Just (session, fromJust mjid)
 
 
+-- In case login failed asks user if he wants to try again
 loginFailed :: IO (Maybe (Session, Jid))
 loginFailed = do 
             putStrLn "The login try failed!\nDo you wish to try again? (y/n)"
@@ -25,6 +28,7 @@ loginFailed = do
                 else if reply == "n" || reply == "N"
                          then return Nothing
                          else loginFailed
+
 
 -- Collects the user credentials from the command line.
 getCreds :: IO (String, String, String)
@@ -40,6 +44,8 @@ getCreds = do
          domain <- getLine
          return (usr, pass, domain)
 
+
+-- Tries login with user credentials
 tryLogin :: IO (Either LoginFailure Session)
 tryLogin = do
          (usr,pass,dom) <- getCreds
