@@ -8,7 +8,7 @@ import Control.Concurrent
 import Control.Monad
 import Types
 import qualified Data.Text as T
-import Network.Xmpp
+import Network.Xmpp hiding (Jid)
 
 type ConvWindow'  = (Box (Box (Bordered Edit) FormattedText) (Bordered Edit))
 data Conversation = Conversation { widget :: Widget Edit, showC :: IO ()}
