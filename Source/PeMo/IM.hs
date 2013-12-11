@@ -14,14 +14,14 @@ import Network.Xmpp.IM
 import Network.Socket hiding (isConnected)
 import Types
 
-getJid' = getJid
 
 imInit :: Chan IMAction -> Chan UIAction -> Session -> IO ()
 imInit cIM cUI s = do
                  forkIO $ listenThread s cIM
                  imLoop cUI s
 
--- TODO: create parser to identify properly 'composing'/'paused'/'body' elements
+
+-- Waits for an IM message and forwards its display action to UI
 imLoop :: Chan UIAction -> Session -> IO ()
 imLoop cUI s = forever $ do 
                        msg <- getMessage s
@@ -34,71 +34,28 @@ imLoop cUI s = forever $ do
                                        then return ()
                                        else writeChan cUI (DisplayMsg jid text)
 
+-- Removes any extra information in jid related to the client
 formatJid :: Jid -> IO Jid
 formatJid j = return $ parseJid (takeWhile (/='/') $ T.unpack $ jidToText j)
 
+
+-- Waits on IM channel for an action and executes it
 listenThread :: Session -> Chan IMAction -> IO ()
 listenThread s ch = forever $ do
-                            ev <- readChan ch
-                            case ev of 
-                                (SendMsg jid text) -> void $ sendIM s jid text
+                            action <- readChan ch
+                            case action of 
+                                (SendMsg jid text) -> void $ sendMessage (simpleIM jid text) s
                                 Logout             -> logout s
 
+
 login :: HostName -> Text -> Text -> IO (Either LoginFailure Session)
-login h u p = do
-                conn <- tryConnection h u p
+login host user pass = do
+                conn <- tryConnection host user pass
                 if (isConnected conn)
                   then do sess <- right conn
-                          setOnState sess   -- TODO if return is false
+                          setOnState sess
                           return (Right sess)
                   else return (Left $ fromJust (getConnError conn))
-
--- send message 
-sendIM :: Session -> Jid -> Text -> IO Bool
-sendIM s j t = sendMessage (simpleIM j t) s
-
-tryConnection :: HostName -> Text -> Text -> IO Connection
-tryConnection domain user pass = session domain
-                                 (Just (\_ -> ( [scramSha1 user Nothing pass]), Nothing))
-                                 def
-
--- check if connection 
-isConnected :: Connection -> Bool
-isConnected (Right s) = True
-isConnected _         = False
-
--- 
-getConnError :: Connection -> Maybe String
-getConnError (Left e) = Just (show "Connection Failure!")    --(show e)
-getConnError _        = Nothing
-
-setOnState :: Session -> IO Bool
-setOnState = setState True
-
-setOffState :: Session -> IO Bool
-setOffState = setState False
-
-setState :: Bool -> Session -> IO Bool
-setState True s = sendPresence presenceOnline  s
-setState _    s = sendPresence presenceOffline s
-
--- returns IM body text
-getIMBody :: InstantMessage -> Text
-getIMBody im = T.unlines (map (bodyContent) (imBody im))
-
-
-
--- retrieve online buddies
---getBuddies :: Session -> IO [Jid]
---getBuddies =  liftM f . getRoster
-  --      where   f :: Roster -> [Jid]
-    --            f r = [j | j <- keys (items r)]
-
--- ..................................- ---------------------
-
-
-right :: Either a b -> IO b
-right (Right b) = return b
 
 
 logout :: Session -> IO ()
@@ -106,4 +63,43 @@ logout s = do
          setState False s
          endSession s
 
+
+tryConnection :: HostName -> Text -> Text -> IO Connection
+tryConnection domain user pass = session domain
+                                         (Just (\_ -> ( [scramSha1 user Nothing pass]), Nothing))
+                                         def
+
+-- Checks if connected 
+isConnected :: Connection -> Bool
+isConnected (Right s) = True
+isConnected _         = False
+
+-- Returns error of connection 
+getConnError :: Connection -> Maybe String
+getConnError (Left e) = Just (show "Connection Failure!")    --TODO: Parse error and print it    (show e)
+getConnError _        = Nothing
+
+
+-- Sets online state
+setOnState :: Session -> IO Bool
+setOnState = setState True
+
+
+-- Sets offline state
+setOffState :: Session -> IO Bool
+setOffState = setState False
+
+
+setState :: Bool -> Session -> IO Bool
+setState True s = sendPresence presenceOnline  s
+setState _    s = sendPresence presenceOffline s
+
+
+-- returns IM body text
+getIMBody :: InstantMessage -> Text
+getIMBody im = T.unlines (map (bodyContent) (imBody im))
+
+
+right :: Either a b -> IO b
+right (Right b) = return b
 

@@ -44,3 +44,4 @@ tryLogin :: IO (Either LoginFailure Session)
 tryLogin = do
          (usr,pass,dom) <- getCreds
          login dom (pack usr) (pack pass)
+

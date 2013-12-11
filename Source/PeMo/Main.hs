@@ -9,6 +9,7 @@ import UI
 import IM
 import Util
 
+
 main = do
      putStrLn "Welcome To PeMo Messenger!"    
      mSession <- mkSession
@@ -23,6 +24,7 @@ initChat :: Session -> Jid -> IO ()
 initChat s jid = do 
                uiChan <- newChan  -- (UIActions)
                imChan <- newChan  -- (IMActions)
+               -- initiate both threads UI and IM
                forkIO $ imInit imChan uiChan s
                uiInit imChan uiChan jid
 
