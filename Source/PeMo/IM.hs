@@ -52,13 +52,10 @@ login :: HostName -> Text -> Text -> IO (Either LoginFailure Session)
 login h u p = do
                 conn <- tryConnection h u p
                 if (isConnected conn)
-                then do
-                    sess <- right conn
-                    setOnState sess   -- TODO if return is false
-                    return (Right sess)
-                else
-                    return (Left $ fromJust (getConnError conn))
-
+                  then do sess <- right conn
+                          setOnState sess   -- TODO if return is false
+                          return (Right sess)
+                  else return (Left $ fromJust (getConnError conn))
 
 -- send message 
 sendIM :: Session -> Jid -> Text -> IO Bool
