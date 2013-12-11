@@ -17,7 +17,7 @@ import Types
 type LoginFailure = String
 type Connection = (Either XmppFailure Session)
 
-getJid' :: Session -> IO (Maybe Jid)
+getJid' :: Session -> IO (Maybe Jid)   -- Why does it recieve Session?
 getJid' = getJid
 
 imInit :: Chan IMAction -> Chan UIAction -> Session -> IO ()
@@ -76,7 +76,7 @@ isConnected _         = False
 
 -- 
 getConnError :: Connection -> Maybe String
-getConnError (Left e) = Just (show e)
+getConnError (Left e) = Just (show "Connection Failure!")    --(show e)
 getConnError _        = Nothing
 
 setOnState :: Session -> IO Bool
