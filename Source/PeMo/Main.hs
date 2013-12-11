@@ -3,10 +3,10 @@
 module Main where
 
 import Control.Concurrent
+import System.Exit
 import Types
 import UI
 import IM
-import System.Exit
 import Util
 
 main = do
