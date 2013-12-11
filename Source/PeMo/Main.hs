@@ -7,7 +7,6 @@ import Types
 import UI
 import IM
 import System.Exit
-import Data.Maybe
 import Util
 
 main = do

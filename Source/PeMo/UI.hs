@@ -14,7 +14,7 @@ type ConvWindow'  = (Box (Box (Bordered Edit) FormattedText) (Bordered Edit))
 data Conversation = Conversation { widget :: Widget Edit, showC :: IO ()}
 data State = State { conversations :: [(Jid, Conversation)]
                    , activeBuddy   :: Maybe Jid
-                   }--, contacts :: [(Jid, PresenceType)] }
+                   }
              
 newState :: State
 newState = State { conversations = [], activeBuddy = Nothing }
