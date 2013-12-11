@@ -4,7 +4,8 @@ module UI where
 
 import Graphics.Vty hiding (Button)
 import Graphics.Vty.Widgets.All
-import Control.Concurrent
+import Control.Concurrent.Chan
+import Control.Concurrent (forkIO)
 import Control.Monad
 import Types
 import qualified Data.Text as T
