@@ -6,7 +6,7 @@ version:             0.0.1.0
 -- synopsis:            
 -- description:         
 license:             BSD3
-license-file:        LICENSE
+license-file:        LICENSE.md
 author:              Pedro Matias, Mozhan Soltani
 maintainer:          mozhan.soltani@gmail.com
 -- copyright:           
@@ -18,4 +18,4 @@ executable PeMo
   main-is: Main.hs
   hs-source-dirs: Source/PeMo             
   -- other-modules:       
-  build-depends:       base ==4.6.*, text ==0.11.*, vty ==4.7.*, vty-ui ==1.6.*, pontarius-xmpp ==0.3.*, network ==2.4.*, data-default ==0.5.*, hslogger ==1.2.*
+  build-depends:       base ==4.6.*, text ==0.11.*, vty ==4.7.*, vty-ui ==1.6.*, pontarius-xmpp ==0.3.*, network ==2.4.*, data-default ==0.5.*, hslogger ==1.2.*, unix == 2.6.*
