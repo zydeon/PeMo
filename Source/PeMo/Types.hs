@@ -16,3 +16,9 @@ data IMAction = SendMsg Jid Text      -- sendMessage
               | Logout
 
 
+type Session = X.Session
+
+type LoginFailure = String
+type Connection = (Either X.XmppFailure Session)
+
+pack = T.pack

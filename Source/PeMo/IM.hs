@@ -2,7 +2,7 @@
 
 module IM where
 
-import Network.Xmpp hiding (Types, Jid)
+import Network.Xmpp hiding (Types, Jid, Session)
 import Network.Xmpp.IM
 import Network.Socket hiding (isConnected)
 import qualified Data.Text as T
@@ -14,8 +14,6 @@ import Control.Concurrent.Chan
 import Control.Concurrent (forkIO)
 import Types
 
-type LoginFailure = String
-type Connection = (Either XmppFailure Session)
 
 getJid' :: Session -> IO (Maybe Jid)   -- Why does it recieve Session?
 getJid' = getJid
