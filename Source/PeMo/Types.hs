@@ -18,8 +18,7 @@ data IMAction = SendMsg Jid Text      -- send message
 type Jid = X.Jid
 type Text = T.Text
 type Session = X.Session
-type LoginFailure = String
-type Connection = (Either X.XmppFailure Session)
 
 pack = T.pack
+unpack = T.unpack
 getJid' = X.getJid

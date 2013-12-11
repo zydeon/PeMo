@@ -15,6 +15,11 @@ import Network.Socket hiding (isConnected)
 import Types
 
 
+type LoginFailure = String
+type Connection = (Either XmppFailure Session)
+
+
+-- Initiates threads
 imInit :: Chan IMAction -> Chan UIAction -> Session -> IO ()
 imInit cIM cUI s = do
                  forkIO $ listenThread s cIM
@@ -28,15 +33,15 @@ imLoop cUI s = forever $ do
                        case (getIM msg) of
                            Nothing -> return ()
                            Just im -> do 
-                                   jid  <- formatJid $ fromJust $ messageFrom msg
+                                   jid  <- return $ formatJid $ fromJust $ messageFrom msg
                                    text <- return $ getIMBody im
                                    if text == ""
                                        then return ()
                                        else writeChan cUI (DisplayMsg jid text)
 
 -- Removes any extra information in jid related to the client
-formatJid :: Jid -> IO Jid
-formatJid j = return $ parseJid (takeWhile (/='/') $ T.unpack $ jidToText j)
+formatJid :: Jid -> Jid
+formatJid j = parseJid (takeWhile (/='/') $ T.unpack $ jidToText j)
 
 
 -- Waits on IM channel for an action and executes it

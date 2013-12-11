@@ -15,7 +15,7 @@ mkSession = do
               (Left  failure) -> loginFailed
               (Right session) -> do
                               mjid <- getJid' session
-                              return $ Just (session, fromJust mjid)
+                              return $ Just (session, formatJid $ fromJust mjid)
 
 
 -- In case login failed asks user if he wants to try again
