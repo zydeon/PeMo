@@ -7,7 +7,7 @@ version:             0.0.1.0
 -- description:         
 license:             BSD3
 license-file:        LICENSE.md
-author:              Pedro Matias, Mozhan Soltani
+author:              Mozhan Soltani , Pedro Matias
 maintainer:          mozhan.soltani@gmail.com
 -- copyright:           
 category:            Network
