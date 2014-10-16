@@ -12,22 +12,22 @@ mkSession :: IO (Maybe (Session, Jid))
 mkSession = do
           try <- tryLogin
           case try of 
-              (Left  failure) -> loginFailed
+              (Left  failure) -> loginFailed failure
               (Right session) -> do
                               mjid <- getJid' session
                               return $ Just (session, formatJid $ fromJust mjid)
 
 
 -- In case login failed asks user if he wants to try again
-loginFailed :: IO (Maybe (Session, Jid))
-loginFailed = do 
-            putStrLn "The login try failed!\nDo you wish to try again? (y/n)"
+loginFailed :: LoginFailure -> IO (Maybe (Session, Jid))
+loginFailed err = do 
+            putStrLn $ "The login failed!\n"++ err ++"\nDo you wish to try again? (y/n)"
             reply <- getLine 
             if reply == "y" || reply == "Y"
                 then mkSession
                 else if reply == "n" || reply == "N"
                          then return Nothing
-                         else loginFailed
+                         else loginFailed err
 
 
 -- Collects the user credentials from the command line.

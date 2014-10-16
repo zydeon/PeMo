@@ -69,7 +69,7 @@ createUI cIM cUI = do
         buddies       <- multiLineEditWidget
         chat          <- multiLineEditWidget
         typing        <- editWidget
-        buddyList     <- newList (fgColor yellow)
+        buddyList     <- newList (fgColor yellow) 1
         fg            <- newFocusGroup        -- responsible for changing input 
                                               -- between widgets
 

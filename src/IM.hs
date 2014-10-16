@@ -81,21 +81,21 @@ isConnected _         = False
 
 -- Returns error of connection 
 getConnError :: Connection -> Maybe String
-getConnError (Left e) = Just (show "Connection Failure!")    --TODO: Parse error and print it    (show e)
+getConnError (Left e) = Just (show e)
 getConnError _        = Nothing
 
 
 -- Sets online state
-setOnState :: Session -> IO Bool
+setOnState :: Session -> IO (Either XmppFailure ())
 setOnState = setState True
 
 
 -- Sets offline state
-setOffState :: Session -> IO Bool
+setOffState :: Session -> IO (Either XmppFailure ())
 setOffState = setState False
 
 
-setState :: Bool -> Session -> IO Bool
+setState :: Bool -> Session -> IO (Either XmppFailure ())
 setState True s = sendPresence presenceOnline  s
 setState _    s = sendPresence presenceOffline s
 
